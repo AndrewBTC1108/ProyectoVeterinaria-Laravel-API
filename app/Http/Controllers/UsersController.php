@@ -23,6 +23,7 @@ class UsersController extends Controller
                 ->orWhere('last_name', 'like', "%{$search}%")
                 ->orWhere('cedula', 'like', "%{$search}%");
         })->where('admin', 0)
+        ->where('doctor', 0)
         ->orderBy('created_at', 'desc')
         ->paginate(6, ['id', 'cedula', 'name', 'last_name', 'email', 'phone_number'], 'page', $page);
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointments;
 use App\Http\Resources\AppointmentsResource;
-use App\Models\User;
 use App\Traits\AppointmentTrait;
 use App\Http\Requests\AppointMents\StoreAppointmentsRequest;
 use App\Http\Requests\AppointMents\UpdateAppointmentsRequest;

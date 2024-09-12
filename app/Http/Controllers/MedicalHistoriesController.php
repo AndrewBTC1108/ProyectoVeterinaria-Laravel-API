@@ -7,6 +7,8 @@ use App\Models\MedicalHistories;
 use App\Http\Requests\MedicalHistories\StoreMedicalHistoriesRequest;
 use App\Http\Requests\MedicalHistories\UpdateMedicalHistoriesRequest;
 use App\Models\Appointments;
+use App\Models\PreviousTreatment;
+use App\Models\SurgicalProcedures;
 use Illuminate\Http\JsonResponse;
 
 class MedicalHistoriesController extends Controller
@@ -16,43 +18,12 @@ class MedicalHistoriesController extends Controller
      */
     public function index(Request $request) : JsonResponse
     {
-        $medicalHistories = MedicalHistories::with('previous_treatments', 'surgical_procedures')
-                                            ->where('pet_id', $request->pet_id)->get();
-        $medicalHistoriesPet = [];
-        $previous_treatments = [];
-        $surgical_procedures = [];
-
-        foreach($medicalHistories as $medicalHistory){
-            $medicalHistoriesPet[] = [
-                'id' => $medicalHistory->id,
-                'date' => $medicalHistory->date,
-                'reasonConsult' => $medicalHistory->reasonConsult,
-                'observations' => $medicalHistory->observations,
-                'food' => $medicalHistory->food,
-                'frequencyFood' => $medicalHistory->frequencyFood
-            ];
-
-            foreach($medicalHistory->previous_treatments as $treatment) {
-               $previous_treatments[] = [
-                    'id' => $treatment->id,
-                    'name' => $treatment->name,
-                    'date' => $treatment->date,
-                    'medical_histories_id' => $treatment->medical_histories_id
-               ];
-            }
-
-            foreach($medicalHistory->surgical_procedures as $procedure) {
-                $surgical_procedures[] = [
-                    'id' => $procedure->id,
-                    'name' => $procedure->name,
-                    'date' => $procedure->date,
-                    'medical_histories_id' => $procedure->medical_histories_id
-                ];
-            }
-        }
+        $medicalHistories = MedicalHistories::where('pet_id', $request->pet_id)->get(['id', 'date', 'reasonConsult', 'observations', 'food', 'frequencyFood']);
+        $previous_treatments = PreviousTreatment::where('pet_id', $request->pet_id)->get(['id', 'name', 'date']);
+        $surgical_procedures = SurgicalProcedures::where('pet_id', $request->pet_id)->get(['id', 'name', 'date']);
 
         return response()->json([
-            'medicalHistoriesPet' => $medicalHistoriesPet,
+            'medicalHistoriesPet' => $medicalHistories,
             'previous_treatments' => $previous_treatments,
             'surgical_procedures' => $surgical_procedures
         ]);
